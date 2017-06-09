@@ -5,7 +5,7 @@
  *
  * No license is granted for this project.
  */
-import * as types from '../actions/actionTypes';
+import * as types from '../Actions/actionTypes';
 import initialState from './initialState';
 
 export default function dealerReducer(state = initialState.dealers, action) {

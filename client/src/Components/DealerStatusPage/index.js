@@ -6,9 +6,10 @@
  * No license is granted for this project.
  */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import DealerList from '../DealerList/index';
 import { connect } from 'react-redux';
-import * as dealerActions from '../../Actions/dealerActions';
+//import * as dealerActions from '../../Actions/dealerActions';
 import './DealerStatusPage.css';
 import '../DealerList';
 
@@ -18,9 +19,9 @@ class DealerStatusPage extends Component {
       <div className="DealerStatusPage">
         <h1>Dealer Status</h1>
         <h2>Eligible Dealer List</h2>
-        <DealerList dealers={this.props.dealers} isEligible="true" />
+        <DealerList dealers={this.props.dealers} isEligible={true} />
         <h2>Ineligible Dealer List</h2>
-        <DealerList dealers={this.props.dealers} isEligible="false" />
+        <DealerList dealers={this.props.dealers} isEligible={false} />
       </div>
     );
   }

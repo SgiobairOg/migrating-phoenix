@@ -11,6 +11,6 @@ import dealers from './dealerReducer';
 const rootReducer = combineReducers({
   // short hand property names
   dealers
-})
+});
 
 export default rootReducer;

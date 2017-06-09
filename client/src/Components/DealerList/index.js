@@ -5,25 +5,28 @@
  *
  * No license is granted for this project.
  */
-import React, { Component } from 'react';
+import React from 'react';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import './DealerList.css';
 
-const DealerList = ({dealers}) => {
+const DealerList = ({dealers}, props) => {
   
   const listClasses = classnames({
     DealerList: true,
-    'DealerList--Eligible': this.state.isEligible
+    'DealerList--Eligible': props.isEligible
   });
   
   const listItemClasses = classnames({
     DealerList__Item: true,
-    'DealerList__Item--Eligible': this.state.isEligible
+    'DealerList__Item--Eligible': props.isEligible
   });
-  
+  console.log('Dealers: ', dealers.length);
   return (
     <ul className={listClasses}>
-      {dealers.map(dealer =>
+      
+      {
+        dealers.map(dealer =>
         <li className={listItemClasses} key={dealer.DealerID}>
           {dealer.DealerName}
         </li>
@@ -34,7 +37,7 @@ const DealerList = ({dealers}) => {
 
 DealerList.propTypes = {
   dealers: PropTypes.array.isRequired,
-  eligibility: PropTypes.bool.isRequired
+  isEligible: PropTypes.bool.isRequired
 };
 
 export default DealerList;

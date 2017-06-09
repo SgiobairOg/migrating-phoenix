@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import './App.css';
+import Main from '../routes';
 //import DealerStatusPage from './Components/DealerStatusPage/index';
 
 class App extends Component {
@@ -10,14 +11,10 @@ class App extends Component {
         <div className="app__header">
           <h1>Dealer Migration Tool</h1>
         </div>
-        {this.props.children}
+        <Main/>
       </div>
     );
   }
 }
-
-App.propTypes = {
-  children: PropTypes.object.isRequired
-};
 
 export default App;

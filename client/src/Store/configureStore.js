@@ -6,7 +6,7 @@
  * No license is granted for this project.
  */
 import {createStore, applyMiddleware} from 'redux';
-import rootReducer from '../reducers/rootReducer';
+import rootReducer from '../Reducers/rootReducer';
 import thunk from 'redux-thunk';
 
 export default function configureStore() {
