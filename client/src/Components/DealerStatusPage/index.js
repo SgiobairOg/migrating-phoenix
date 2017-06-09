@@ -7,6 +7,8 @@
  */
 import React, { Component } from 'react';
 import DealerList from '../DealerList/index';
+import { connect } from 'react-redux';
+import * as dealerActions from '../../Actions/dealerActions';
 import './DealerStatusPage.css';
 import '../DealerList';
 
@@ -16,12 +18,22 @@ class DealerStatusPage extends Component {
       <div className="DealerStatusPage">
         <h1>Dealer Status</h1>
         <h2>Eligible Dealer List</h2>
-        <DealerList isEligible="true" />
+        <DealerList dealers={this.props.dealers} isEligible="true" />
         <h2>Ineligible Dealer List</h2>
-        <DealerList isEligible="false" />
+        <DealerList dealers={this.props.dealers} isEligible="false" />
       </div>
     );
   }
 }
 
-export default DealerStatusPage;
+DealerStatusPage.propTypes = {
+  dealers: PropTypes.array.isRequired
+};
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    dealers: state.dealers
+  };
+};
+
+export default connect(mapStateToProps)(DealerStatusPage);
