@@ -8,6 +8,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import './DealerList.css';
 
 const DealerList = ({dealers}, props) => {
@@ -23,15 +24,20 @@ const DealerList = ({dealers}, props) => {
   });
   console.log('Dealers: ', dealers.length);
   return (
-    <ul className={listClasses}>
+    <table className={listClasses}>
+      <tbody>
       
       {
         dealers.map(dealer =>
-        <li className={listItemClasses} key={dealer.DealerID}>
-          {dealer.DealerName}
-        </li>
+        <tr className={listItemClasses} key={dealer.DealerID}>
+          <td><Link to={`/dealer/${dealer.DealerID}`}>{dealer.DealerName}</Link></td>
+          <td>{dealer.DealerURL}</td>
+          <td>{dealer.CountryCode}</td>
+        </tr>
       )}
-    </ul>
+      
+      </tbody>
+    </table>
   );
 };
 

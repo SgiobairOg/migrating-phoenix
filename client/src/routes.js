@@ -8,11 +8,14 @@
 import React from 'react';
 import {Switch, Route } from 'react-router-dom';
 import DealerStatusPage from './Components/DealerStatusPage';
+import DealerDetailsPage from './Components/DealerDetailsPage';
 
 const Main = () => (
   <main>
     <Switch>
-      <Route exact path="/" component={DealerStatusPage}/>
+      <Route exact path="/" component={DealerStatusPage}>
+        <Route path="/dealers/:id" component={DealerDetailsPage} />
+      </Route>
     </Switch>
   </main>
 );

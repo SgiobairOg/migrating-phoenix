@@ -17,11 +17,16 @@ class DealerStatusPage extends Component {
   render() {
     return (
       <div className="DealerStatusPage">
-        <h1>Dealer Status</h1>
-        <h2>Eligible Dealer List</h2>
-        <DealerList dealers={this.props.dealers} isEligible={true} />
-        <h2>Ineligible Dealer List</h2>
-        <DealerList dealers={this.props.dealers} isEligible={false} />
+        <div className="dealer-listing">
+          <h1>Dealer Status</h1>
+          <h2>Eligible Dealer List</h2>
+          <DealerList dealers={this.props.dealers} isEligible={true} />
+          <h2>Ineligible Dealer List</h2>
+          <DealerList dealers={this.props.dealers} isEligible={false} />
+        </div>
+        <div className="dealer-details">
+          {this.props.children}
+        </div>
       </div>
     );
   }
