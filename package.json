@@ -12,6 +12,8 @@
     "express": "^4.15.3",
     "mongodb": "^2.2.28",
     "mongoose": "^4.10.5",
+    "node-sass": "^4.5.3",
+    "node-sass-middleware": "^0.11.0",
     "path": "^0.12.7",
     "prop-types": "^15.5.10",
     "pug": "^2.0.0-rc.2",
