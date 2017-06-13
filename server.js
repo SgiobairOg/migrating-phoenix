@@ -40,7 +40,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/api', api );
-api.use('/*', (req,res) => res.json({message: "nope, guess again"}));
+app.use(function(req, res, next){
+  res.status(404);
+  
+  // respond with json
+  if (req.accepts('json')) {
+    res.send({ error: 'Nope, try again' });
+    return;
+  }
+  
+  // default to plain-text. send()
+  res.type('txt').send('Nope, try again');
+});
 
 app.listen(port);
 console.log(`Latest Server Running on port ${port} from ${version}`);
