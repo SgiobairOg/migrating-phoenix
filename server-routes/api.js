@@ -175,7 +175,8 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
 router.get('/features', function(req, res) {
   Feature.find({}).exec(function(err, result) {
     if (!err) {
-      res.json(result);
+      //res.json(result);
+      res.render('features-list', {features: result})
     } else {
       res.json({message: 'Error retrieving Features List: ', err});
     }
