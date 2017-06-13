@@ -28,6 +28,8 @@ const
   port = process.env.PORT || 1983,
   version = process.env.SOURCE_VERSION || 'dev';
 
+app.set('view engine', 'pug');
+app.set('views', './views');
 app.disable('x-powered-by');
 
 app.use(function (req, res, next) {
@@ -42,9 +44,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api', api );
 app.use(function(req, res, next){
   res.status(404);
-  
+  res.render('nope', { title: 'Nope, try again' });
   // respond with json
-  if (req.accepts('json')) {
+  if (res.format('json')) {
     res.send({ error: 'Nope, try again' });
     return;
   }
