@@ -13,6 +13,7 @@ client/node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+proprietary.js
 
 npm-debug.log*
 yarn-debug.log*

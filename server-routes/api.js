@@ -17,81 +17,7 @@ const
     "DealerURL": String,
     "CountryCode": String,
     "DealerClassCode": String,
-    "FeatureFlags": [
-      {"HasUseChat": Boolean},
-      {"HasLeadXmlExport": Boolean},
-      {"HasFinanceApps": Boolean},
-      {"HasMobile": Boolean},
-      {"HasOnlineCatalog": Boolean},
-      {"HasOnlineOrders": Boolean},
-      {"HasCoupons": Boolean},
-      {"HasGuestBook": Boolean},
-      {"HasMassEmail": Boolean},
-      {"HasInvoices": Boolean},
-      {"HasCallManagement": Boolean},
-      {"HasEmailManagement": Boolean},
-      {"HasEmploymentApps": Boolean},
-      {"HasOEMPromotions": Boolean},
-      {"HasRentals": Boolean},
-      {"HasMobile_MobileMaintenanceOptions": Boolean},
-      {"HasSitemapManager": Boolean},
-      {"HasBannerBuilder": Boolean},
-      {"HasSocialMedia": Boolean},
-      {"HasMigratedToPhoenix": Boolean},
-      {"HasImChatFee": Boolean},
-      {"HasCallTrackingFee": Boolean},
-      {"HasEmailFee": Boolean},
-      {"HasSocialMediaFee": Boolean},
-      {"HasRVWSNewsletterFee": Boolean},
-      {"HasNewsletterTransmissionFee": Boolean},
-      {"HasOEMPromotionsFee": Boolean},
-      {"HasRentalsModuleFee": Boolean},
-      {"HasMultiLocationFee": Boolean},
-      {"HasFreeSiteFee": Boolean},
-      {"HasCatalogPackDistributorFee": Boolean},
-      {"HasCatalogPackPremiumFee": Boolean},
-      {"HasCatalogPackStandardFee": Boolean},
-      {"HasCraigslistQuickPlusFee": Boolean},
-      {"HasCraigslistQuickPlusEbayFee": Boolean},
-      {"HasDataDistributionFee": Boolean},
-      {"HasEbayAuctionsClassifiedsFee": Boolean},
-      {"HasRVABasicFee": Boolean},
-      {"HasRVUSAFee": Boolean},
-      {"HasSocialLinkRVFee": Boolean},
-      {"HasTotalDataDistributionFee": Boolean},
-      {"HasVideoBrochureFee": Boolean},
-      {"HasWebsiteFlixFee": Boolean},
-      {"HasRVWSBronzePowerPakFee": Boolean},
-      {"HasRVWGoldPowerPakFee": Boolean},
-      {"HasRVWSPlatinumPowerPakFee": Boolean},
-      {"HasRVWSSilverPowerPakFee": Boolean},
-      {"HasFiche": Boolean},
-      {"HasTestimonials": Boolean},
-      {"HasLotVantageEbay": Boolean},
-      {"HasLotVantageCraigsList": Boolean},
-      {"HasClazRV": Boolean},
-      {"HasCarSourRV": Boolean},
-      {"HasOodleRV": Boolean},
-      {"HasPennySaverRV": Boolean},
-      {"HasGeebo": Boolean},
-      {"HasRVandCycleShopper": Boolean},
-      {"HasRVTraderApi": Boolean},
-      {"HasCapitalDealerSolutions": Boolean},
-      {"HasRVUSA": Boolean},
-      {"HasEbayRV": Boolean},
-      {"HasCraigsListRV": Boolean},
-      {"HasJaycoInventory": Boolean},
-      {"HasKijiji": Boolean},
-      {"HasAutoTraderCA": Boolean},
-      {"HasOnDemandInventoryExtract": Boolean},
-      {"HasKijijiLeadImport": Boolean},
-      {"HasPSNLeadImport": Boolean},
-      {"IsDisplayingSharedInventory": Boolean},
-      {"IsSharingInventory": Boolean},
-      {"HasDataXInventory": Boolean},
-      {"HasTraderOnlineInventory": Boolean},
-      {"HasLoginPage": Boolean}
-    ]
+    "FeatureFlags": []
   }),
   Dealer = mongoose.model('dealers', dealerSchema);
 
@@ -124,15 +50,124 @@ router.get('/dealers/eligible', function(req, res) {
     
     if (!err) {
       //If there is no problem compare dealer features to feature status.
-      let eligible = true;
+
+      let dealerQuery = result;
       
-      
-      
+      Feature.find({}).exec(function(err, result) {
+        if (!err) {
+          
+          let featureQuery = result;
+          
+          res.json(determineEligibility(dealerQuery,featureQuery, true));
+          
+        }
+      })
     }
-    
-    
   })
 });
+
+router.get('/dealers/eligible/:id', function(req, res) {
+  Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
+    
+    if (!err) {
+      
+      //If there is no problem compare dealer features to feature status.
+      let dealerQuery = result;
+      
+      Feature.find({}).exec(function(err, result) {
+        if (!err) {
+          let featureQuery = result;
+          
+          res.json(determineEligibility(dealerQuery,featureQuery, true));
+        }
+      })
+    }
+  })
+});
+
+/*
+ * GET Ineligible Dealer List
+ */
+router.get('/dealers/ineligible', function(req, res) {
+  Dealer.find({}).exec(function(err, result) {
+    
+    if (!err) {
+      //If there is no problem compare dealer features to feature status.
+      let dealerQuery = result;
+      
+      Feature.find({}).exec(function(err, result) {
+        if (!err) {
+          
+          let featureQuery = result;
+          
+          res.json(determineEligibility(dealerQuery,featureQuery, false));
+          
+        }
+      })
+    }
+  })
+});
+
+router.get('/dealers/ineligible/:id', function(req, res) {
+  Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
+    
+    if (!err) {
+      
+      //If there is no problem compare dealer features to feature status.
+      let dealerQuery = result;
+      
+      Feature.find({}).exec(function(err, result) {
+        if (!err) {
+          let featureQuery = result;
+          
+          res.json(determineEligibility(dealerQuery,featureQuery, false));
+        }
+      })
+    }
+  })
+});
+
+const determineEligibility = ( dealers, features, eligible = true ) => {
+  
+  let eligibilityList = {
+    count: 0,
+    dealers: []
+  };
+  
+  dealers.forEach( (dealer) => {
+    
+    let isEligible = true;
+    let dealerJSON = {id: dealer.DealerID, name: dealer.DealerName, features:[]};
+    
+    dealer.FeatureFlags.forEach( (flag) => {
+      
+      if(Object.values(flag)[0]) { //If the flag is turned on for the dealer
+        
+        features.forEach( (feature) => {
+          
+          if ( feature.flags.indexOf(Object.keys(flag)[0]) >= 0 ) {  //If feature's flag list contains the current flag
+            
+            //Feature is in use with dealer
+            dealerJSON.features.push({name: Object.keys(flag)[0]});
+            //console.log(`${dealer.DealerName} has the ${Object.keys(flag)[0]} feature.`);
+      
+            if (!feature.isComplete) isEligible = false; //If feature is not complete, dealer is ineligible
+            //console.log(`The ${Object.keys(flag)[0]} feature is ${feature.isComplete ? 'complete' : 'not complete'}.`);
+            //console.log(`${dealer.DealerName} is ${isEligible ? 'eligible' : 'not eligible'}.`);
+      
+          }
+        })
+      }
+    });
+    
+    if(isEligible === eligible) {
+      eligibilityList.count += 1;
+      eligibilityList.dealers.push(dealerJSON);
+    }
+    
+  });
+  return eligibilityList
+};
 
 /*
  * GET featurelist.
