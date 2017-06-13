@@ -41,4 +41,4 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api', api );
 
 app.listen(port);
-console.log("Server Running");
+console.log(`Latest Server Running on port ${port}`);
