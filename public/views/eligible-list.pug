@@ -1,0 +1,25 @@
+//
+   Created by Wilsons on 6/13/17.
+
+html
+    head
+        title Phoenix Dealer List
+        link(
+            rel="stylesheet"
+            href="/css/eligible.css"
+        )
+        link(
+            rel="stylesheet"
+            href="/css/nav.css"
+        )
+    body.eligible-list__page
+        include nav.pug
+        h1.eligible-list__title #{data.count} Phoenix-#{eligibility} Dealers
+
+        ul.eligible-list
+            each dealer in data.dealers
+                li.eligible-list__item
+                    h2.eligible-list__item__name ✔️ #{dealer.name} <span class="eligible-list__item__name eligible-list__item__name--id">#{dealer.id}</span>
+                    p.eligible-list__item__features Associated Report Flags:
+                    each feature in dealer.features
+                        p.eligible-list__item__features.eligible-list__item__features--indented  #{feature.name}

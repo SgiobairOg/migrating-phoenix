@@ -6,9 +6,15 @@ html
         title Phoenix Features List
         link(
             rel="stylesheet"
-            href="../css/features.css"
+            href="/css/features.css"
         )
+        link(
+            rel="stylesheet"
+            href="/css/nav.css"
+        )
+
     body.feature-list__page
+        include nav.pug
         h1.feature-list__title Phoenix Features Status
 
         ul.feature-list

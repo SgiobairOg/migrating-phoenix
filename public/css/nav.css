@@ -1,0 +1,23 @@
+.navigation {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start; }
+  .navigation__link {
+    margin: 15px;
+    margin-bottom: 0;
+    min-height: 44px;
+    min-width: 44px;
+    line-height: 44px;
+    padding: 0 10px;
+    border: 1px solid;
+    text-decoration: none;
+    color: darkgrey;
+    vertical-align: middle; }
+    .navigation__link:visited {
+      color: lightgrey; }
+    .navigation__link:hover {
+      color: cornflowerblue; }
+    .navigation__link:active {
+      color: lightgrey; }
+    .navigation__link:nth-child(1) {
+      margin-left: 0; }

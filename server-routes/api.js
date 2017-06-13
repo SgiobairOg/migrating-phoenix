@@ -17,7 +17,8 @@ const
     "DealerURL": String,
     "CountryCode": String,
     "DealerClassCode": String,
-    "FeatureFlags": []
+    "FeatureFlags": [],
+    "HasMigratedToPhoenix": Boolean
   }),
   Dealer = mongoose.model('dealers', dealerSchema);
 
@@ -42,6 +43,27 @@ router.get('/dealers', function(req, res) {
   });
 });
 
+
+
+router.get('/dealers/eligible/:id', function(req, res) {
+  Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
+    
+    if (!err) {
+      
+      //If there is no problem compare dealer features to feature status.
+      let dealerQuery = result;
+      
+      Feature.find({}).exec(function(err, result) {
+        if (!err) {
+          let featureQuery = result;
+          
+          return res.render('eligible-list', {eligibility: 'Eligible', data: determineEligibility(dealerQuery,featureQuery, true)});
+        }
+      })
+    }
+  })
+});
+
 /*
  * GET Eligible Dealer List
  */
@@ -57,8 +79,8 @@ router.get('/dealers/eligible', function(req, res) {
         if (!err) {
           
           let featureQuery = result;
-          
-          res.json(determineEligibility(dealerQuery,featureQuery, true));
+  
+          return res.render('eligible-list', {eligibility: 'Eligible', data: determineEligibility(dealerQuery,featureQuery, true)});
           
         }
       })
@@ -66,7 +88,12 @@ router.get('/dealers/eligible', function(req, res) {
   })
 });
 
-router.get('/dealers/eligible/:id', function(req, res) {
+
+/*
+ * GET Ineligible Dealer
+ */
+
+router.get('/dealers/not/eligible/:id', function(req, res) {
   Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
     
     if (!err) {
@@ -78,17 +105,14 @@ router.get('/dealers/eligible/:id', function(req, res) {
         if (!err) {
           let featureQuery = result;
           
-          res.json(determineEligibility(dealerQuery,featureQuery, true));
+          return res.render('eligible-list', {eligibility: 'Ineligible', data: determineEligibility(dealerQuery,featureQuery, false)});
         }
       })
     }
   })
 });
 
-/*
- * GET Ineligible Dealer List
- */
-router.get('/dealers/ineligible', function(req, res) {
+router.get('/dealers/not/eligible', function(req, res) {
   Dealer.find({}).exec(function(err, result) {
     
     if (!err) {
@@ -99,8 +123,8 @@ router.get('/dealers/ineligible', function(req, res) {
         if (!err) {
           
           let featureQuery = result;
-          
-          res.json(determineEligibility(dealerQuery,featureQuery, false));
+  
+          return res.render('eligible-list', {eligibility: 'Ineligible', data: determineEligibility(dealerQuery,featureQuery, false)});
           
         }
       })
@@ -108,24 +132,7 @@ router.get('/dealers/ineligible', function(req, res) {
   })
 });
 
-router.get('/dealers/ineligible/:id', function(req, res) {
-  Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
-    
-    if (!err) {
-      
-      //If there is no problem compare dealer features to feature status.
-      let dealerQuery = result;
-      
-      Feature.find({}).exec(function(err, result) {
-        if (!err) {
-          let featureQuery = result;
-          
-          res.json(determineEligibility(dealerQuery,featureQuery, false));
-        }
-      })
-    }
-  })
-});
+
 
 const determineEligibility = ( dealers, features, eligible = true ) => {
   
@@ -160,9 +167,12 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
       }
     });
     
+    
     if(isEligible === eligible) {
-      eligibilityList.count += 1;
-      eligibilityList.dealers.push(dealerJSON);
+      if(!dealer.HasMigratedToPhoenix) {
+        eligibilityList.count += 1;
+        eligibilityList.dealers.push(dealerJSON);
+      }
     }
     
   });
@@ -173,12 +183,12 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
  * GET featurelist.
  */
 router.get('/features', function(req, res) {
-  Feature.find({}).exec(function(err, result) {
+  Feature.find({}).sort({isComplete: -1}).exec(function(err, result) {
     if (!err) {
       //res.json(result);
-      res.render('features-list', {features: result})
+      return res.render('features-list', {features: result})
     } else {
-      res.json({message: 'Error retrieving Features List: ', err});
+      return res.json({message: 'Error retrieving Features List: ', err});
     }
   });
 });
