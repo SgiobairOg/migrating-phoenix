@@ -25,7 +25,8 @@ db.once('open', () => console.log('Connected to Mongo'));
   
 const
   app = express(),
-  port = process.env.PORT || 1983;
+  port = process.env.PORT || 1983,
+  version = process.env.SOURCE_VERSION || 'dev';
 
 app.disable('x-powered-by');
 
@@ -39,6 +40,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/api', api );
+api.use('/*', (req,res) => res.json({message: "nope, guess again"}));
 
 app.listen(port);
-console.log(`Latest Server Running on port ${port}`);
+console.log(`Latest Server Running on port ${port} from ${version}`);
