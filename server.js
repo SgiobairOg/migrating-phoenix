@@ -53,10 +53,11 @@ app.use(
     indentedSyntax: true,
     prefix: '/css'
   }),
-  express.static(path.join(__dirname, 'public'))
+  express.static(path.join(__dirname, 'public')),
+  {maxAge: 0}
 );
 
-app.use('/', api );
+app.use('/', api, {maxAge: 0} );
 app.use(function(req, res, next){
   res.status(404);
   return res.render('nope', { title: 'Nope, try again' });
