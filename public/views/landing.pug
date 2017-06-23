@@ -1,0 +1,24 @@
+//
+   Created by Wilsons on 6/23/17.
+
+html
+    head
+        title Phoenix Dealer List
+        link(
+        rel="stylesheet"
+        href="/css/landing.css"
+        )
+        link(
+        rel="stylesheet"
+        href="/css/nav.css"
+        )
+    body.eligible-list__page
+
+        .background
+            video.background__video(autoplay='', loop='', muted='')
+                source(src='/video/Cat_Wranglers.mp4', type='video/mp4;codecs="avc1.42E01E, mp4a.40.2"')
+
+        .foreground
+            .foreground__container
+                p.foreground__container__title Herding cats, migrating clients, same thing.
+                include nav.pug

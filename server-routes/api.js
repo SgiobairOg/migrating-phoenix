@@ -32,6 +32,11 @@ const
 // Use native promises
 mongoose.Promise = global.Promise;
 
+
+router.get('/', function(req, res) {
+  return res.render('landing', {});
+});
+
 /*
  * GET dealerlist.
  */
