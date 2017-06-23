@@ -8,7 +8,9 @@
 const
   express = require('express'),
   router = express.Router(),
-  mongoose = require('mongoose');
+  mongoose = require('mongoose'),
+  ip = require('express-ipfilter').IpFilter,
+  IpDeniedError = require('express-ipfilter').IpDeniedError;
 
 const
   dealerSchema = new mongoose.Schema({
@@ -30,21 +32,9 @@ const
   }),
   Feature = mongoose.model('features', featureSchema);
 
-const ipMask = '204.154.44';
+const IPS = [['127.0.0.1','204.154.44.0/24']];
 
-router.use((req, res, next) => {
-  
-  const visitorIp = req.ip;
-  
-  console.log(visitorIp);
-  
-  if( visitorIp.includes(ipMask, 0) ) {
-    next();
-  } else {
-    return res.render('nope', {});
-  }
-  
-});
+router.use(ip(IPS, {mode: 'allow'}));
 
 
 
@@ -258,4 +248,18 @@ const featureCount = ( features ) => {
   
 };
 
+
+router.use(function(err, req, res, _next) {
+  console.log('Error handler', err);
+  if(err instanceof IpDeniedError){
+    res.status(401);
+  }else{
+    res.status(err.status || 500);
+  }
+  
+  res.render('error', {
+    message: 'You shall not pass',
+    error: err
+  });
+});
 module.exports = router;
