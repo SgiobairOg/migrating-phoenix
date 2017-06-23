@@ -29,6 +29,9 @@ const
   }),
   Feature = mongoose.model('features', featureSchema);
 
+// Use native promises
+mongoose.Promise = global.Promise;
+
 /*
  * GET dealerlist.
  */
@@ -185,14 +188,14 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
 /*
  * GET featurelist.
  */
-router.get('/features', function(req, res) {
+router.get('/features', async function(req, res) {
   // Search for all records in the Feature model
   Feature
     .find({})
     .sort({isComplete: -1})   //Sort complete features first
     .exec(function(err, result) {
       if (!err) {
-        featureCount( result )  //Count the Dealers who have each feature
+        let countedFeatures = featureCount( result )  //Count the Dealers who have each feature
           .then( ( countedFeatures ) => { //... then render the view with the features
             return res.render('features-list', {features: countedFeatures })
           });
@@ -202,34 +205,32 @@ router.get('/features', function(req, res) {
     });
 });
 
-const featureCount = async ( features ) => {
+const featureCount = ( features ) => {
   // For Each feature, identify the number of dealers using the feature
   console.log("Counting...");
   
-  await Promise.all( features.map( (feature) => {
+  return Promise.all(
+    features.map((feature) => {
     
-    Dealer
-      .find({
-        featureFlags: { $in: feature.flags } //Find dealers whose feature flags match the current feature
-      })
-      .count() // Count the dealers returned
-      .exec( (err, count) => {
+      return Dealer
+        .find({
+          featureFlags: {$in: feature.flags} //Find dealers whose feature flags match the current feature
+        })
+        .count() // Count the dealers returned
+        .exec((err, count) => {
+        
+          if (!err) {
+            feature.dealerCount = count; //Assign the dealer count to the dealer
+            console.log("Count: ", count, ", dealerCount: ", feature.dealerCount);
+          } else {
+            console.error(err);
+          }
+        
+        }).then( () => feature ).catch((err) => console.log(err));
     
-        if(!err) {
-          feature.dealerCount = count; //Assign the dealer count to the dealer
-          console.log("Count: ", count, ", dealerCount: ", feature.dealerCount);
-        } else {
-          console.error(err);
-        }
-      
-      });
+    })
     
-  })).then(() => {
-  
-    console.log(features[0]);
-    return features;
-    
-  });
+  );
   
 };
 
