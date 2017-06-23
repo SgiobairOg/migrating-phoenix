@@ -1,0 +1,23 @@
+{
+  "name": "migrating-phoenix-data-cli",
+  "version": "1.0.0",
+  "description": "Simple tool for taking raw PSN report data and meshing it to Phoenix DB formats.",
+  "main": "index.js",
+  "scripts": {
+    "test": "console.log('Lazy developers don't test simple one-offs');"
+  },
+  "author": "Jason Wilson",
+  "license": "ISC",
+  "bin": {
+    "mp-dealers": "./index.js",
+    "mp-features": "./features.js"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "commander": "^2.9.0",
+    "csv": "^1.1.1",
+    "dotenv": "^4.0.0",
+    "fs": "0.0.1-security",
+    "jsonfile": "^3.0.0"
+  }
+}

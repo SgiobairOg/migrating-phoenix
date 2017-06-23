@@ -12,13 +12,12 @@ const
 
 const
   dealerSchema = new mongoose.Schema({
-    "DealerID": String,
-    "DealerName": String,
-    "DealerURL": String,
-    "CountryCode": String,
-    "DealerClassCode": String,
-    "FeatureFlags": [],
-    "HasMigratedToPhoenix": Boolean
+    "id": String,
+    "name": String,
+    "url": String,
+    "countryCode": String,
+    "featureFlags": [String],
+    "migrated": Boolean
   }),
   Dealer = mongoose.model('dealers', dealerSchema);
 
@@ -46,7 +45,7 @@ router.get('/dealers', function(req, res) {
 
 
 router.get('/dealers/eligible/:id', function(req, res) {
-  Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
+  Dealer.find({'id': req.params.id}).exec(function(err, result) {
     
     if (!err) {
       
@@ -94,7 +93,7 @@ router.get('/dealers/eligible', function(req, res) {
  */
 
 router.get('/dealers/not/eligible/:id', function(req, res) {
-  Dealer.find({'DealerID': req.params.id}).exec(function(err, result) {
+  Dealer.find({'id': req.params.id}).exec(function(err, result) {
     
     if (!err) {
       
@@ -141,41 +140,45 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
     dealers: []
   };
   
-  dealers.forEach( (dealer) => {
+  dealers.forEach( (dealer, dealerIndex) => {
     
     let isEligible = true;
-    let dealerJSON = {id: dealer.DealerID, name: dealer.DealerName, features:[]};
+    let dealerJSON = {id: dealer.id, name: dealer.name, features: []};
     
-    dealer.FeatureFlags.forEach( (flag) => {
+    dealer.featureFlags.forEach( (flag, index) => {
       
-      if(Object.values(flag)[0]) { //If the flag is turned on for the dealer
+      
         
-        features.forEach( (feature) => {
-          
-          if ( feature.flags.indexOf(Object.keys(flag)[0]) >= 0 ) {  //If feature's flag list contains the current flag
-            
-            //Feature is in use with dealer
-            dealerJSON.features.push({name: Object.keys(flag)[0]});
-            //console.log(`${dealer.DealerName} has the ${Object.keys(flag)[0]} feature.`);
-      
-            if (!feature.isComplete) isEligible = false; //If feature is not complete, dealer is ineligible
-            //console.log(`The ${Object.keys(flag)[0]} feature is ${feature.isComplete ? 'complete' : 'not complete'}.`);
-            //console.log(`${dealer.DealerName} is ${isEligible ? 'eligible' : 'not eligible'}.`);
-      
+      features.forEach( (feature) => {
+  
+        if(dealerIndex === 0) console.log( ">  dealer flag: ", flag, "   feature flags: ", feature.flags, "   has: ", feature.flags.indexOf(flag) >= 0 );
+        
+        if ( feature.flags.indexOf(flag) >= 0 ) {  //If feature's flag list contains the current flag
+
+          if( dealerJSON.features.indexOf(feature.name) < 0 ) {
+            dealerJSON.features.push(feature.name);
           }
-        })
-      }
+    
+          if (!feature.isComplete) isEligible = false; //If feature is not complete, dealer is ineligible
+          //console.log(`The ${Object.keys(flag)[0]} feature is ${feature.isComplete ? 'complete' : 'not complete'}.`);
+          //console.log(`${dealer.DealerName} is ${isEligible ? 'eligible' : 'not eligible'}.`);
+    
+        }
+        
+      })
+    
     });
     
     
     if(isEligible === eligible) {
-      if(!dealer.HasMigratedToPhoenix) {
+      if(!dealer.migrated) {
         eligibilityList.count += 1;
         eligibilityList.dealers.push(dealerJSON);
       }
     }
     
   });
+  console.log(eligibilityList.dealers[0]);
   return eligibilityList
 };
 
@@ -183,14 +186,51 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
  * GET featurelist.
  */
 router.get('/features', function(req, res) {
-  Feature.find({}).sort({isComplete: -1}).exec(function(err, result) {
-    if (!err) {
-      //res.json(result);
-      return res.render('features-list', {features: result})
-    } else {
-      return res.json({message: 'Error retrieving Features List: ', err});
-    }
-  });
+  // Search for all records in the Feature model
+  Feature
+    .find({})
+    .sort({isComplete: -1})   //Sort complete features first
+    .exec(function(err, result) {
+      if (!err) {
+        featureCount( result )  //Count the Dealers who have each feature
+          .then( ( countedFeatures ) => { //... then render the view with the features
+            return res.render('features-list', {features: countedFeatures })
+          });
+      } else {
+        return res.json({message: 'Error retrieving Features List: ', err});
+      }
+    });
 });
+
+const featureCount = async ( features ) => {
+  // For Each feature, identify the number of dealers using the feature
+  console.log("Counting...");
+  
+  await Promise.all( features.map( (feature) => {
+    
+    Dealer
+      .find({
+        featureFlags: { $in: feature.flags } //Find dealers whose feature flags match the current feature
+      })
+      .count() // Count the dealers returned
+      .exec( (err, count) => {
+    
+        if(!err) {
+          feature.dealerCount = count; //Assign the dealer count to the dealer
+          console.log("Count: ", count, ", dealerCount: ", feature.dealerCount);
+        } else {
+          console.error(err);
+        }
+      
+      });
+    
+  })).then(() => {
+  
+    console.log(features[0]);
+    return features;
+    
+  });
+  
+};
 
 module.exports = router;

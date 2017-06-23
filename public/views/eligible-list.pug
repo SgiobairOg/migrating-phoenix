@@ -19,7 +19,8 @@ html
         ul.eligible-list
             each dealer in data.dealers
                 li.eligible-list__item
-                    h2.eligible-list__item__name ✔️ #{dealer.name} <span class="eligible-list__item__name eligible-list__item__name--id">#{dealer.id}</span>
-                    p.eligible-list__item__features Associated Report Flags:
+                    h2.eligible-list__item__name ✔️ #{dealer.name}
+                    p.eligible-list__item__features ID: <span class="eligible-list__item__features eligible-list__item__features--id">#{dealer.id}</span>
+                    p.eligible-list__item__features This dealer has the following #{dealer.features.length} Account Features:
                     each feature in dealer.features
-                        p.eligible-list__item__features.eligible-list__item__features--indented  #{feature.name}
+                        p.eligible-list__item__features.eligible-list__item__features--indented  #{feature}
