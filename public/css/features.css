@@ -44,3 +44,7 @@ html, body {
     font-weight: 100;
     margin: 0;
     padding: 0; }
+    .feature-list__item__flags--note {
+      font-style: italic;
+      font-size: .8em;
+      background-color: khaki; }

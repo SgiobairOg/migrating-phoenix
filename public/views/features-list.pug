@@ -24,6 +24,8 @@ html
                         h2.feature-list__item__name ✔️ #{feature.name}
                     else
                         h2.feature-list__item__name ❌️ #{feature.name}
+                    if feature.note
+                        p.feature-list__item__flags.feature-list__item__flags--note Note: #{feature.note}
                     p.feature-list__item__flags Used by #{feature.dealerCount}
                     p.feature-list__item__flags Associated Report Flags:
                     each flag in feature.flags

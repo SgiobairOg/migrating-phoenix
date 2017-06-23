@@ -25,9 +25,28 @@ const
   featureSchema = new mongoose.Schema({
     "name": String,
     "flags": [String],
-    "isComplete": Boolean
+    "isComplete": Boolean,
+    "note": String
   }),
   Feature = mongoose.model('features', featureSchema);
+
+const ipMask = '204.154.44';
+
+router.use((req, res, next) => {
+  
+  const visitorIp = req.ip;
+  
+  console.log(visitorIp);
+  
+  if( visitorIp.includes(ipMask, 0) ) {
+    next();
+  } else {
+    return res.render('nope', {});
+  }
+  
+});
+
+
 
 // Use native promises
 mongoose.Promise = global.Promise;
@@ -186,7 +205,7 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
     }
     
   });
-  console.log(eligibilityList.dealers[0]);
+  
   return eligibilityList
 };
 
