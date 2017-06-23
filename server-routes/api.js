@@ -195,7 +195,7 @@ router.get('/features', async function(req, res) {
     .sort({isComplete: -1})   //Sort complete features first
     .exec(function(err, result) {
       if (!err) {
-        let countedFeatures = featureCount( result )  //Count the Dealers who have each feature
+        featureCount( result )  //Count the Dealers who have each feature
           .then( ( countedFeatures ) => { //... then render the view with the features
             return res.render('features-list', {features: countedFeatures })
           });
