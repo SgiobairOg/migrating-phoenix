@@ -34,7 +34,7 @@ const
 
 const IPS = [['127.0.0.1','204.154.44.0/24']];
 
-router.use(ip(IPS, {mode: 'allow'}));
+//router.use(ip(IPS, {mode: 'allow'}));
 
 
 
@@ -190,6 +190,7 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
     if(isEligible === eligible) {
       if(!dealer.migrated) {
         eligibilityList.count += 1;
+        console.log(dealerJSON);
         eligibilityList.dealers.push(dealerJSON);
       }
     }
