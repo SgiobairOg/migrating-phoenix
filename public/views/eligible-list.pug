@@ -16,6 +16,26 @@ html
         include nav.pug
         h1.eligible-list__title #{data.count} Phoenix-#{eligibility} Dealers
 
+        .collapsible.collapsible--collapsed
+            .collapsible__controls(x-toggle)
+                label.collapsible__label Results Table
+                a.btn.btn--small(href="#") Expand
+
+            table.eligible-table
+                thead.eligible-table__head
+                    tr
+                        th Dealer Name
+                        th Dealer ID
+                        th Features
+                tbody.eligible-table__body
+                    each dealer in data.dealers
+                        tr
+
+                            td #{dealer.name}
+                            td #{dealer.id}
+                            td #{dealer.features.join(', ')}
+
+
         ul.eligible-list
             each dealer in data.dealers
                 li.eligible-list__item
@@ -24,3 +44,5 @@ html
                     p.eligible-list__item__features This dealer has the following #{dealer.features.length} Account Features:
                     each feature in dealer.features
                         p.eligible-list__item__features.eligible-list__item__features--indented  #{feature}
+
+    script(src="/js/collapse.js" type="text/javascript")

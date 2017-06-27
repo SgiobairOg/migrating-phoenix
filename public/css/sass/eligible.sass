@@ -58,3 +58,47 @@ html, body
         padding-left: 1em
 
 
+.collapsible
+  max-height: 40px
+  overflow: hidden
+
+  &--collapsed
+    max-height: 999em
+
+  &__label
+    color: rgba(0,0,0,.6)
+    font-size: 1em
+    font-family: sans-serif
+    font-weight: 100
+    margin: 0
+    padding: 0.5em 0.5em 0 0
+    cursor: pointer
+
+  &__controls
+    min-height: max-content
+    margin: 0 0 1em 0
+    padding-top: .3em
+    cursor: pointer
+
+.btn
+  border: 1px solid rgba(0,0,0,.6)
+  border-radius: 5px
+  color: rgba(0,0,0,.6)
+  font-size: 1em
+  font-family: sans-serif
+  font-weight: 100
+  padding: .8em 1em
+  margin: 1px
+  box-sizing: border-box
+  text-decoration: none
+
+  &--small
+    font-size: .9em
+    padding: .3em .5em
+
+.eligible-table
+  font-size: .7em
+  color: rgba(0,0,0,.6)
+  font-family: sans-serif
+  font-weight: 100
+  text-align: left

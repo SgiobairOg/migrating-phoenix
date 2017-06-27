@@ -10,6 +10,8 @@ const
   path = require('path'),
   bodyParser = require('body-parser'),
   api = require('./server-routes/api'),
+  ip = require('express-ipfilter').IpFilter,
+  ipDenied = require('express-ipfilter').IpDeniedError,
   sass = require('node-sass'),
   sassMiddleware = require('node-sass-middleware');
 
@@ -34,6 +36,10 @@ app.set('view engine', 'pug');
 app.set('views', path.join( __dirname, 'public/views'));
 app.disable('x-powered-by');
 
+const IPS = [['127.0.0.1','204.154.44.0/24']];
+
+app.use(ip(IPS, {mode: 'allow'}));
+
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -42,8 +48,6 @@ app.use(function (req, res, next) {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-
 
 app.use(
   sassMiddleware({
@@ -56,11 +60,30 @@ app.use(
   express.static(path.join(__dirname, 'public'))
 );
 
+app.use("/js", express.static(__dirname + 'public/js', {
+  maxage: '0m'
+}));
+
 app.use('/', api );
 app.use(function(req, res, next){
   res.status(404);
   return res.render('nope', { title: 'Nope, try again' });
 });
+
+app.use(function(err, req, res, _next) {
+  console.log('Error handler', err);
+  if(err instanceof ipDenied){
+    res.status(401);
+  }else{
+    res.status(err.status || 500);
+  }
+  
+  res.render('error', {
+    message: 'You shall not pass',
+    error: err
+  });
+});
+
 
 app.listen(port);
 console.log(`Latest Server Running on port ${port} from ${version}`);
