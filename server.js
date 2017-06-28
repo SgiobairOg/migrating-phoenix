@@ -36,7 +36,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join( __dirname, 'public/views'));
 app.disable('x-powered-by');
 
-const IPS = [['127.0.0.1','204.154.44.0/24']];
+const IPS = process.env.IP_WHITELIST || ['127.0.0.1'];
 
 app.use(ip(IPS, {mode: 'allow'}));
 
