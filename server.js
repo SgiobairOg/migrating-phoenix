@@ -10,10 +10,10 @@ const
   path = require('path'),
   bodyParser = require('body-parser'),
   api = require('./server-routes/api'),
-  ip = require('express-ipfilter').IpFilter,
-  ipDenied = require('express-ipfilter').IpDeniedError,
+  dotenv = require('dotenv').config({path: `${__dirname}/mp.env`}),
   sass = require('node-sass'),
-  sassMiddleware = require('node-sass-middleware');
+  sassMiddleware = require('node-sass-middleware'),
+  auth = require('express-basic-auth');
 
 //Database
 const
@@ -36,9 +36,11 @@ app.set('view engine', 'pug');
 app.set('views', path.join( __dirname, 'public/views'));
 app.disable('x-powered-by');
 
-const IPS = process.env.IP_WHITELIST || ['127.0.0.1'];
-
-app.use(ip(IPS, {mode: 'allow'}));
+app.use(auth({
+  users: { 'rvws': 'migrate' },
+  challenge: true,
+  realm: 'MigratingPhoenix'
+}));
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
