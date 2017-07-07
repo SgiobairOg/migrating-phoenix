@@ -67,6 +67,7 @@ app.use("/js", express.static(__dirname + 'public/js', {
 }));
 
 app.use('/', api );
+
 app.use(function(req, res, next){
   res.status(404);
   return res.render('nope', { title: 'Nope, try again' });

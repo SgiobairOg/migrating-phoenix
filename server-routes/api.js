@@ -187,6 +187,8 @@ const determineEligibility = ( dealers, features, eligible = true ) => {
     
   });
   
+  eligibilityList.dealers.sort( (a,b) => a.features.length - b.features.length)
+  
   return eligibilityList
 };
 
