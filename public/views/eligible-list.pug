@@ -26,14 +26,14 @@ html
                     tr
                         th Dealer Name
                         th Dealer ID
-                        th Features
+                        th Features Count
                 tbody.eligible-table__body
                     each dealer in data.dealers
                         tr
 
                             td #{dealer.name}
                             td #{dealer.id}
-                            td #{dealer.features.join(', ')}
+                            td #{dealer.features.length}
 
 
         ul.eligible-list
